@@ -10,11 +10,19 @@ const INITIAL_ACCOUNTS = [
 ]
 
 export default function Accounts() {
-  const [accounts, setAccounts] = useState(INITIAL_ACCOUNTS)
+  const [accounts, setAccounts] = useState(() => {
+    const saved = localStorage.getItem('adrepost_accounts')
+    return saved ? JSON.parse(saved) : INITIAL_ACCOUNTS
+  })
   const [showModal, setShowModal] = useState(false)
   const [form, setForm]       = useState({ username:'', password:'', site:'OLX Pakistan', proxy:'US-East (DataImpulse)' })
   const [syncing, setSyncing] = useState(null)
   const [toast, setToast]     = useState(null)
+
+  const saveAccounts = (newAccs) => {
+    setAccounts(newAccs)
+    localStorage.setItem('adrepost_accounts', JSON.stringify(newAccs))
+  }
 
   const showToast = (msg, type='success') => {
     setToast({ msg, type })
@@ -24,7 +32,7 @@ export default function Accounts() {
   const handleConnect = (e) => {
     e.preventDefault()
     const newAcc = { id: Date.now(), username: form.username, site: form.site, status:'active', lastSync:'Just now', adsCount:0, color:'#10b981', proxy: form.proxy }
-    setAccounts(prev => [...prev, newAcc])
+    saveAccounts([newAcc, ...accounts])
     setShowModal(false)
     setForm({ username:'', password:'', site:'OLX Pakistan', proxy:'US-East (DataImpulse)' })
     showToast(`Account "${newAcc.username}" connected successfully!`)
@@ -33,13 +41,13 @@ export default function Accounts() {
   const handleSync = async (id) => {
     setSyncing(id)
     await new Promise(r => setTimeout(r, 1800))
-    setAccounts(prev => prev.map(a => a.id===id ? {...a, lastSync:'Just now', status:'active'} : a))
+    saveAccounts(accounts.map(a => a.id===id ? {...a, lastSync:'Just now', status:'active'} : a))
     setSyncing(null)
     showToast('Ads synced successfully!')
   }
 
   const handleDelete = (id) => {
-    setAccounts(prev => prev.filter(a => a.id!==id))
+    saveAccounts(accounts.filter(a => a.id!==id))
     showToast('Account removed', 'error')
   }
 

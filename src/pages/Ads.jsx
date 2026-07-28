@@ -17,22 +17,30 @@ const INITIAL_ADS = [
 const INTERVALS = [1,3,6,12,24]
 
 export default function Ads() {
-  const [ads, setAds]         = useState(INITIAL_ADS)
+  const [ads, setAds] = useState(() => {
+    const saved = localStorage.getItem('adrepost_ads')
+    return saved ? JSON.parse(saved) : INITIAL_ADS
+  })
   const [filter, setFilter]   = useState('all')
   const [search, setSearch]   = useState('')
   const [reposting, setReposting] = useState(null)
   const [syncingAll, setSyncingAll] = useState(false)
   const [toast, setToast]     = useState(null)
 
+  const saveAds = (newAds) => {
+    setAds(newAds)
+    localStorage.setItem('adrepost_ads', JSON.stringify(newAds))
+  }
+
   const showToast = (msg, type='success') => { setToast({msg,type}); setTimeout(()=>setToast(null),3000) }
 
-  const toggleAd  = id => setAds(p=>p.map(a=>a.id===id?{...a,autoRepost:!a.autoRepost}:a))
-  const setInterval_ = (id, val) => setAds(p=>p.map(a=>a.id===id?{...a,interval:+val}:a))
+  const toggleAd  = id => saveAds(ads.map(a=>a.id===id?{...a,autoRepost:!a.autoRepost}:a))
+  const setInterval_ = (id, val) => saveAds(ads.map(a=>a.id===id?{...a,interval:+val}:a))
 
   const handleRepost = async (id) => {
     setReposting(id)
     await new Promise(r=>setTimeout(r,1500))
-    setAds(p=>p.map(a=>a.id===id?{...a,lastRepost:'Just now'}:a))
+    saveAds(ads.map(a=>a.id===id?{...a,lastRepost:'Just now'}:a))
     setReposting(null)
     showToast('Ad reposted successfully via background worker!')
   }
