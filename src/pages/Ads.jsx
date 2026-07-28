@@ -185,7 +185,7 @@ export default function Ads() {
                 <input className="input-field" type="text" placeholder="e.g. Honda Civic 2022 Full Option"
                   value={newAd.title} onChange={e=>setNewAd({...newAd, title:e.target.value})} required />
               </div>
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:14 }}>
+              <div className="modal-grid" style={{ marginBottom:14 }}>
                 <div>
                   <label style={{ fontSize:13, fontWeight:600, color:'var(--text-secondary)', display:'block', marginBottom:6 }}>Category</label>
                   <select className="select-field" style={{ width:'100%', padding:'10px' }}
@@ -203,7 +203,7 @@ export default function Ads() {
                     value={newAd.price} onChange={e=>setNewAd({...newAd, price:e.target.value})} required />
                 </div>
               </div>
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:20 }}>
+              <div className="modal-grid" style={{ marginBottom:20 }}>
                 <div>
                   <label style={{ fontSize:13, fontWeight:600, color:'var(--text-secondary)', display:'block', marginBottom:6 }}>Target Account</label>
                   <select className="select-field" style={{ width:'100%', padding:'10px' }}
