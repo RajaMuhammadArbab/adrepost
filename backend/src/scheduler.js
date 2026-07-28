@@ -1,5 +1,5 @@
 const cron = require('node-cron')
-const prisma = require('../lib/prisma')
+const prisma = require('./lib/prisma')
 
 /**
  * Background scheduler — runs every 15 minutes
