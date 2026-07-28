@@ -32,11 +32,32 @@ const QUICK_ADS = [
 
 export default function Dashboard() {
   const { user } = useAuth()
-  const [ads, setAds] = useState(QUICK_ADS)
+  
+  const [ads, setAds] = useState(() => {
+    const saved = localStorage.getItem('adrepost_ads')
+    return saved ? JSON.parse(saved) : QUICK_ADS
+  })
+
+  const [accountsCount] = useState(() => {
+    const saved = localStorage.getItem('adrepost_accounts')
+    return saved ? JSON.parse(saved).length : 3
+  })
+
+  const saveAds = (newAds) => {
+    setAds(newAds)
+    localStorage.setItem('adrepost_ads', JSON.stringify(newAds))
+  }
 
   const toggleAd = (id) => {
-    setAds(prev => prev.map(a => a.id === id ? {...a, autoRepost: !a.autoRepost} : a))
+    saveAds(ads.map(a => a.id === id ? {...a, autoRepost: !a.autoRepost} : a))
   }
+
+  const dynamicStats = [
+    { label:'Connected Accounts', value: String(accountsCount), change:'+1 this week', icon:Users,      color:'blue',   iconBg:'rgba(59,130,246,0.12)',  iconColor:'#60a5fa' },
+    { label:'Active Ads',         value: String(ads.length), change:'+5 this week', icon:Radio,      color:'purple', iconBg:'rgba(139,92,246,0.12)', iconColor:'#a78bfa' },
+    { label:'Reposts Today',      value:'47', change:'+12 vs yesterday', icon:RefreshCw, color:'green',  iconBg:'rgba(16,185,129,0.12)',  iconColor:'#34d399' },
+    { label:'Success Rate',       value:'96.2%', change:'Last 30 days', icon:TrendingUp, color:'yellow', iconBg:'rgba(245,158,11,0.12)',  iconColor:'#fbbf24' },
+  ]
 
   return (
     <div style={{ display:'flex' }}>
@@ -47,7 +68,7 @@ export default function Dashboard() {
 
           {/* Stats */}
           <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:20, marginBottom:28 }}>
-            {STATS.map(({ label, value, change, icon:Icon, color, iconBg, iconColor }) => (
+            {dynamicStats.map(({ label, value, change, icon:Icon, color, iconBg, iconColor }) => (
               <div key={label} className={`stat-card ${color}`}>
                 <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:16 }}>
                   <div style={{ width:44, height:44, background:iconBg, borderRadius:12, display:'flex', alignItems:'center', justifyContent:'center' }}>
