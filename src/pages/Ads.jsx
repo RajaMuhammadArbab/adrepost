@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import Header from '../components/Header'
-import { RefreshCw, Filter, Search, Clock } from 'lucide-react'
+import { RefreshCw, Filter, Search, Clock, DownloadCloud } from 'lucide-react'
 
 const INITIAL_ADS = [
   { id:1, title:'Honda Civic 2019 Low Mileage',   category:'Cars',       price:'PKR 42,00,000', account:'olx_ali',     status:'active',  autoRepost:true,  interval:3,  lastRepost:'10 mins ago' },
@@ -21,6 +21,7 @@ export default function Ads() {
   const [filter, setFilter]   = useState('all')
   const [search, setSearch]   = useState('')
   const [reposting, setReposting] = useState(null)
+  const [syncingAll, setSyncingAll] = useState(false)
   const [toast, setToast]     = useState(null)
 
   const showToast = (msg, type='success') => { setToast({msg,type}); setTimeout(()=>setToast(null),3000) }
@@ -33,7 +34,14 @@ export default function Ads() {
     await new Promise(r=>setTimeout(r,1500))
     setAds(p=>p.map(a=>a.id===id?{...a,lastRepost:'Just now'}:a))
     setReposting(null)
-    showToast('Ad reposted successfully!')
+    showToast('Ad reposted successfully via background worker!')
+  }
+
+  const handleSyncAll = async () => {
+    setSyncingAll(true)
+    await new Promise(r=>setTimeout(r,2500)) // Simulate network request to fetch ads
+    setSyncingAll(false)
+    showToast('All active ads imported from platforms!')
   }
 
   const filtered = ads.filter(a => {
@@ -46,7 +54,7 @@ export default function Ads() {
     <div style={{display:'flex'}}>
       <Sidebar />
       <main className="main-layout">
-        <Header title="My Ads" subtitle="Manage auto-reposting for all your classified ads" />
+        <Header title="My Ads" subtitle="Import and schedule auto-reposting for all your classified ads" />
         <div className="page-content fade-in">
           {/* Controls */}
           <div style={{display:'flex',gap:12,marginBottom:24,flexWrap:'wrap',alignItems:'center'}}>
@@ -58,20 +66,25 @@ export default function Ads() {
             {['all','active','paused','expired'].map(f=>(
               <button key={f} onClick={()=>setFilter(f)}
                 style={{padding:'9px 16px',borderRadius:8,fontSize:13,fontWeight:600,cursor:'pointer',border:'1px solid',
-                  background: filter===f?'rgba(59,130,246,0.15)':'transparent',
-                  color: filter===f?'#60a5fa':'var(--text-muted)',
-                  borderColor: filter===f?'rgba(59,130,246,0.3)':'var(--border-light)',
+                  background: filter===f?'rgba(59,130,246,0.08)':'transparent',
+                  color: filter===f?'var(--accent-blue)':'var(--text-muted)',
+                  borderColor: filter===f?'rgba(59,130,246,0.2)':'var(--border)',
                   transition:'all 0.2s', fontFamily:'Inter,sans-serif'}}>
                 {f.charAt(0).toUpperCase()+f.slice(1)}
               </button>
             ))}
+            
+            <button className="btn-primary" onClick={handleSyncAll} disabled={syncingAll} style={{padding:'9px 16px', fontSize:13}}>
+               <DownloadCloud size={16} style={{animation:syncingAll?'bounce 1s infinite':'none'}}/> 
+               {syncingAll ? 'Importing Ads...' : 'Import Latest Ads'}
+            </button>
           </div>
 
-          <div style={{background:'var(--bg-card)',border:'1px solid var(--border)',borderRadius:16,overflow:'hidden'}}>
+          <div style={{background:'var(--bg-card)',border:'1px solid var(--border)',borderRadius:16,overflow:'hidden',boxShadow:'0 4px 6px rgba(0,0,0,0.02)'}}>
             <div style={{padding:'16px 24px',borderBottom:'1px solid var(--border)',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-              <span style={{fontSize:13,color:'var(--text-muted)'}}>{filtered.length} ad{filtered.length!==1?'s':''} found</span>
+              <span style={{fontSize:13,color:'var(--text-muted)'}}>{filtered.length} ad{filtered.length!==1?'s':''} found in database</span>
               <div style={{display:'flex',alignItems:'center',gap:6,fontSize:12,color:'var(--text-muted)'}}>
-                <Clock size={12}/> Auto-saves on toggle
+                <Clock size={12}/> Scheduler runs on background workers automatically
               </div>
             </div>
             <div style={{overflowX:'auto'}}>
@@ -83,10 +96,10 @@ export default function Ads() {
                     <th>Price</th>
                     <th>Account</th>
                     <th>Status</th>
-                    <th>Interval</th>
+                    <th>Schedule Interval</th>
                     <th>Last Repost</th>
                     <th>Auto-Repost</th>
-                    <th>Action</th>
+                    <th>Manual Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -114,7 +127,7 @@ export default function Ads() {
                         <button className="btn-secondary" style={{padding:'6px 12px',fontSize:11}}
                           onClick={()=>handleRepost(ad.id)} disabled={reposting===ad.id}>
                           <RefreshCw size={12} style={{animation:reposting===ad.id?'spin 1s linear infinite':'none'}}/>
-                          {reposting===ad.id?'Reposting...':'Repost Now'}
+                          {reposting===ad.id?'Sending request...':'Force Repost'}
                         </button>
                       </td>
                     </tr>
@@ -126,7 +139,7 @@ export default function Ads() {
         </div>
       </main>
       {toast&&<div className={`toast ${toast.type==='success'?'toast-success':'toast-error'}`}>{toast.type==='success'?'✅':'❌'} {toast.msg}</div>}
-      <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
+      <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}} @keyframes bounce{0%, 100% {transform: translateY(0);} 50% {transform: translateY(-3px);}}`}</style>
     </div>
   )
 }
