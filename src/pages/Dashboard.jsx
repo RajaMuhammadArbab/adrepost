@@ -140,10 +140,10 @@ export default function Dashboard() {
                 {ACTIVITY.map((item, i) => (
                   <div key={item.id} style={{
                     padding:'14px 20px', display:'flex', alignItems:'flex-start', gap:12,
-                    borderBottom: i < ACTIVITY.length-1 ? '1px solid rgba(30,45,69,0.4)' : 'none',
+                    borderBottom: i < ACTIVITY.length-1 ? '1px solid #f1f5f9' : 'none',
                     transition:'background 0.15s'
                   }}
-                    onMouseEnter={e=>e.currentTarget.style.background='rgba(30,45,69,0.3)'}
+                    onMouseEnter={e=>e.currentTarget.style.background='#f8fafc'}
                     onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
                     <div style={{ marginTop:2 }}>
                       {item.status==='success'
