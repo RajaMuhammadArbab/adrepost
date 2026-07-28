@@ -1,0 +1,96 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(cuid())
+  name         String
+  email        String        @unique
+  password     String
+  role         Role          @default(USER)
+  plan         Plan          @default(FREE)
+  credits      Int           @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  accounts     Account[]
+  repostLogs   RepostLog[]
+  transactions Transaction[]
+}
+
+model Account {
+  id            String    @id @default(cuid())
+  userId        String
+  username      String
+  site          String
+  proxyRegion   String    @default("US-East")
+  sessionCookie String?
+  status        String    @default("active")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ads           Ad[]
+}
+
+model Ad {
+  id           String      @id @default(cuid())
+  accountId    String
+  title        String
+  price        String?
+  category     String?
+  adUrl        String?
+  status       String      @default("active")
+  autoRepost   Boolean     @default(false)
+  interval     Int         @default(6)
+  lastRepostAt DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  account      Account     @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  repostLogs   RepostLog[]
+}
+
+model RepostLog {
+  id        String   @id @default(cuid())
+  adId      String
+  userId    String
+  status    String
+  errorMsg  String?
+  createdAt DateTime @default(now())
+
+  ad        Ad       @relation(fields: [adId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  userId      String
+  stripeId    String?
+  amount      Float
+  credits     Int      @default(0)
+  description String
+  status      String   @default("pending")
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Plan {
+  FREE
+  STARTER
+  PRO
+  AGENCY
+}

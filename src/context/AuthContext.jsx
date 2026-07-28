@@ -1,46 +1,62 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 const AuthContext = createContext(null)
-
-const MOCK_USERS = [
-  { id: '1', name: 'Ali Hassan', email: 'ali@demo.com', password: 'demo1234', role: 'USER',  credits: 150, plan: 'PRO',     isActive: true  },
-  { id: '2', name: 'Admin User',  email: 'admin@demo.com',password: 'admin1234',role: 'ADMIN', credits: 999, plan: 'AGENCY', isActive: true  },
-]
 
 export function AuthProvider({ children }) {
   const [user, setUser]       = useState(null)
   const [loading, setLoading] = useState(true)
 
+  // On mount: check if user is already logged in (via cookie)
   useEffect(() => {
-    const saved = localStorage.getItem('rh_user')
-    if (saved) setUser(JSON.parse(saved))
-    setLoading(false)
+    fetch(`${API}/api/auth/me`, { credentials: 'include' })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data?.user) setUser(data.user) })
+      .catch(() => {})
+      .finally(() => setLoading(false))
   }, [])
 
-  const login = (email, password) => {
-    const found = MOCK_USERS.find(u => u.email === email && u.password === password)
-    if (!found) return { success: false, message: 'Invalid email or password' }
-    if (!found.isActive) return { success: false, message: 'Account is deactivated' }
-    const { password: _, ...safeUser } = found
-    setUser(safeUser)
-    localStorage.setItem('rh_user', JSON.stringify(safeUser))
-    return { success: true, user: safeUser }
+  const login = async (email, password) => {
+    try {
+      const res = await fetch(`${API}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, password })
+      })
+      const data = await res.json()
+      if (!res.ok) return { success: false, message: data.error || 'Login failed' }
+      setUser(data.user)
+      return { success: true, user: data.user }
+    } catch {
+      return { success: false, message: 'Network error. Is the server running?' }
+    }
   }
 
-  const register = (data) => {
-    const exists = MOCK_USERS.find(u => u.email === data.email)
-    if (exists) return { success: false, message: 'Email already registered' }
-    return { success: true }
+  const register = async ({ name, email, password }) => {
+    try {
+      const res = await fetch(`${API}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ name, email, password })
+      })
+      const data = await res.json()
+      if (!res.ok) return { success: false, message: data.error || 'Registration failed' }
+      return { success: true }
+    } catch {
+      return { success: false, message: 'Network error. Is the server running?' }
+    }
   }
 
-  const logout = () => {
+  const logout = async () => {
+    await fetch(`${API}/api/auth/logout`, { method: 'POST', credentials: 'include' })
     setUser(null)
-    localStorage.removeItem('rh_user')
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, register, loading }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, API }}>
       {children}
     </AuthContext.Provider>
   )
