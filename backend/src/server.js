@@ -15,7 +15,9 @@ const app = express()
 
 // CORS — allow frontend
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: function(origin, callback) {
+    callback(null, true); // allow all origins
+  },
   credentials: true
 }))
 
