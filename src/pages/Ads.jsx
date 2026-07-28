@@ -170,6 +170,7 @@ export default function Ads() {
             </div>
           </div>
         </div>
+      </main>
       {/* Create Ad Modal */}
       {showModal && (
         <div className="modal-overlay" onClick={()=>setShowModal(false)}>
