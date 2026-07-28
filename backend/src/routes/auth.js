@@ -24,7 +24,7 @@ router.post('/register', async (req, res) => {
 
     const token = generateToken(user.id)
     setTokenCookie(res, token)
-    res.status(201).json({ user })
+    res.status(201).json({ user, token })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Server error' })
@@ -48,7 +48,7 @@ router.post('/login', async (req, res) => {
     setTokenCookie(res, token)
 
     const { password: _, ...userWithoutPassword } = user
-    res.json({ user: userWithoutPassword })
+    res.json({ user: userWithoutPassword, token })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Server error' })

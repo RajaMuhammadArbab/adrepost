@@ -8,9 +8,22 @@ export function AuthProvider({ children }) {
   const [user, setUser]       = useState(null)
   const [loading, setLoading] = useState(true)
 
-  // On mount: check if user is already logged in (via cookie)
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token')
+    return token ? { Authorization: `Bearer ${token}` } : {}
+  }
+
+  // On mount: check if user is already logged in
   useEffect(() => {
-    fetch(`${API}/api/auth/me`, { credentials: 'include' })
+    const token = localStorage.getItem('token')
+    if (!token) {
+      setLoading(false)
+      return
+    }
+    fetch(`${API}/api/auth/me`, {
+      headers: { ...getAuthHeaders() },
+      credentials: 'include'
+    })
       .then(r => r.ok ? r.json() : null)
       .then(data => { if (data?.user) setUser(data.user) })
       .catch(() => {})
@@ -27,6 +40,7 @@ export function AuthProvider({ children }) {
       })
       const data = await res.json()
       if (!res.ok) return { success: false, message: data.error || 'Login failed' }
+      if (data.token) localStorage.setItem('token', data.token)
       setUser(data.user)
       return { success: true, user: data.user }
     } catch {
@@ -44,6 +58,8 @@ export function AuthProvider({ children }) {
       })
       const data = await res.json()
       if (!res.ok) return { success: false, message: data.error || 'Registration failed' }
+      if (data.token) localStorage.setItem('token', data.token)
+      if (data.user) setUser(data.user)
       return { success: true }
     } catch {
       return { success: false, message: 'Network error. Is the server running?' }
@@ -51,12 +67,13 @@ export function AuthProvider({ children }) {
   }
 
   const logout = async () => {
-    await fetch(`${API}/api/auth/logout`, { method: 'POST', credentials: 'include' })
+    localStorage.removeItem('token')
+    await fetch(`${API}/api/auth/logout`, { method: 'POST', credentials: 'include' }).catch(() => {})
     setUser(null)
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, API }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, API, getAuthHeaders }}>
       {children}
     </AuthContext.Provider>
   )
