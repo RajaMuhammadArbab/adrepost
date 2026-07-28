@@ -120,7 +120,7 @@ export default function Ads() {
                 <Clock size={12}/> Scheduler runs on background workers automatically
               </div>
             </div>
-            <div style={{overflowX:'auto'}}>
+            <div className="table-wrapper">
               <table className="data-table">
                 <thead>
                   <tr>
