@@ -114,13 +114,13 @@ export default function Ads() {
           </div>
 
           <div style={{background:'var(--bg-card)',border:'1px solid var(--border)',borderRadius:16,overflow:'hidden',boxShadow:'0 4px 6px rgba(0,0,0,0.02)'}}>
-            <div style={{padding:'16px 24px',borderBottom:'1px solid var(--border)',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+            <div style={{padding:'16px 24px',borderBottom:'1px solid var(--border)',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:8}}>
               <span style={{fontSize:13,color:'var(--text-muted)'}}>{filtered.length} ad{filtered.length!==1?'s':''} found in database</span>
               <div style={{display:'flex',alignItems:'center',gap:6,fontSize:12,color:'var(--text-muted)'}}>
                 <Clock size={12}/> Scheduler runs on background workers automatically
               </div>
             </div>
-            <div className="table-wrapper">
+            <div className="table-wrapper" style={{maxWidth:'100vw'}}>
               <table className="data-table">
                 <thead>
                   <tr>

@@ -87,7 +87,7 @@ export default function Logs() {
             <div style={{padding:'14px 24px',borderBottom:'1px solid var(--border)'}}>
               <span style={{fontSize:13,color:'var(--text-muted)'}}>{filtered.length} log entries</span>
             </div>
-            <div className="table-wrapper">
+            <div className="table-wrapper" style={{maxWidth:'100vw'}}>
               <table className="data-table">
                 <thead>
                   <tr>

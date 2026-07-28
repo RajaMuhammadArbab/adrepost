@@ -93,7 +93,7 @@ export default function Dashboard() {
                 </div>
                 <a href="/ads" style={{ fontSize:12, color:'var(--accent-blue)', fontWeight:600, textDecoration:'none' }}>View All →</a>
               </div>
-              <div className="table-wrapper"><table className="data-table">
+              <div className="table-wrapper" style={{maxWidth:'100vw'}}><table className="data-table">
                 <thead>
                   <tr>
                     <th>Ad Title</th>
