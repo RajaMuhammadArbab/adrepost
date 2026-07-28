@@ -4,7 +4,8 @@ import { useAuth } from '../context/AuthContext'
 import {
   Users, FileText, RefreshCw, DollarSign,
   TrendingUp, CheckCircle, XCircle, Shield,
-  ToggleLeft, ToggleRight, ArrowLeft, Zap, Clock
+  ToggleLeft, ToggleRight, ArrowLeft, Zap, Clock,
+  Server, Activity, Settings, AlertTriangle
 } from 'lucide-react'
 
 const ADMIN_STATS = [
@@ -101,12 +102,12 @@ export default function Admin() {
 
         {/* Tabs */}
         <div style={{display:'flex',gap:4,marginBottom:24,background:'var(--bg-secondary)',border:'1px solid var(--border)',borderRadius:12,padding:4,width:'fit-content'}}>
-          {['overview','users','logs'].map(t=>(
+          {['overview','users','logs','system'].map(t=>(
             <button key={t} onClick={()=>setTab(t)}
               style={{padding:'8px 20px',borderRadius:8,fontSize:13,fontWeight:600,cursor:'pointer',border:'none',
                 background:tab===t?'var(--bg-card)':'transparent',
                 color:tab===t?'var(--text-primary)':'var(--text-muted)',
-                boxShadow:tab===t?'0 2px 8px rgba(0,0,0,0.3)':'none',
+                boxShadow:tab===t?'0 2px 8px rgba(0,0,0,0.05)':'none',
                 transition:'all 0.2s',fontFamily:'Inter,sans-serif'}}>
               {t.charAt(0).toUpperCase()+t.slice(1)}
             </button>
@@ -145,7 +146,7 @@ export default function Admin() {
               </div>
               <div style={{padding:'8px 0'}}>
                 {PLATFORM_LOGS.map((log,i)=>(
-                  <div key={log.id} style={{padding:'12px 20px',display:'flex',alignItems:'center',gap:12,borderBottom:i<PLATFORM_LOGS.length-1?'1px solid rgba(30,45,69,0.4)':'none'}}>
+                  <div key={log.id} style={{padding:'12px 20px',display:'flex',alignItems:'center',gap:12,borderBottom:i<PLATFORM_LOGS.length-1?'1px solid var(--border)':'none'}}>
                     {log.status==='success'?<CheckCircle size={14} color="#10b981"/>:<XCircle size={14} color="#ef4444"/>}
                     <div style={{flex:1,minWidth:0}}>
                       <p style={{fontSize:12,fontWeight:600,color:'var(--text-primary)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{log.ad}</p>
@@ -238,6 +239,86 @@ export default function Admin() {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {tab==='system' && (
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20}}>
+            {/* System Health */}
+            <div style={{background:'var(--bg-card)',border:'1px solid var(--border)',borderRadius:16,overflow:'hidden'}}>
+              <div style={{padding:'18px 24px',borderBottom:'1px solid var(--border)',display:'flex',alignItems:'center',gap:8}}>
+                <Activity size={18} className="pulse-dot" color="#10b981"/>
+                <h3 style={{fontSize:15,fontWeight:700,color:'var(--text-primary)'}}>System Health & Infrastructure</h3>
+              </div>
+              <div style={{padding:24}}>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 0',borderBottom:'1px solid var(--border)'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:12}}>
+                    <div style={{width:32,height:32,background:'rgba(59,130,246,0.1)',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center'}}><Server size={16} color="#3b82f6"/></div>
+                    <div>
+                      <p style={{fontSize:13,fontWeight:600,color:'var(--text-primary)'}}>Proxy Network (DataImpulse)</p>
+                      <p style={{fontSize:11,color:'var(--text-muted)'}}>154 IPs Active • 99.8% Success Rate</p>
+                    </div>
+                  </div>
+                  <span className="badge badge-success">ONLINE</span>
+                </div>
+                
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 0',borderBottom:'1px solid var(--border)'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:12}}>
+                    <div style={{width:32,height:32,background:'rgba(139,92,246,0.1)',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center'}}><RefreshCw size={16} color="#8b5cf6"/></div>
+                    <div>
+                      <p style={{fontSize:13,fontWeight:600,color:'var(--text-primary)'}}>Background Workers (BullMQ)</p>
+                      <p style={{fontSize:11,color:'var(--text-muted)'}}>4 Workers Running • 0 Queued Jobs</p>
+                    </div>
+                  </div>
+                  <span className="badge badge-success">ACTIVE</span>
+                </div>
+
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 0'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:12}}>
+                    <div style={{width:32,height:32,background:'rgba(245,158,11,0.1)',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center'}}><Shield size={16} color="#f59e0b"/></div>
+                    <div>
+                      <p style={{fontSize:13,fontWeight:600,color:'var(--text-primary)'}}>Anti-Captcha Solver</p>
+                      <p style={{fontSize:11,color:'var(--text-muted)'}}>2Captcha API Connected • $12.40 Balance</p>
+                    </div>
+                  </div>
+                  <span className="badge badge-success">READY</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Global Settings */}
+            <div style={{background:'var(--bg-card)',border:'1px solid var(--border)',borderRadius:16,overflow:'hidden'}}>
+              <div style={{padding:'18px 24px',borderBottom:'1px solid var(--border)',display:'flex',alignItems:'center',gap:8}}>
+                <Settings size={18} color="var(--text-primary)"/>
+                <h3 style={{fontSize:15,fontWeight:700,color:'var(--text-primary)'}}>Global Repost Settings</h3>
+              </div>
+              <div style={{padding:24}}>
+                <div style={{marginBottom:16}}>
+                  <label style={{display:'block',fontSize:12,fontWeight:600,color:'var(--text-secondary)',marginBottom:6}}>Minimum Allowed Repost Interval (Hours)</label>
+                  <select className="select-field" style={{width:'100%',padding:'10px 14px'}} defaultValue="3">
+                    <option value="1">1 Hour (High Risk)</option>
+                    <option value="2">2 Hours (Medium Risk)</option>
+                    <option value="3">3 Hours (Recommended)</option>
+                    <option value="6">6 Hours (Safe)</option>
+                  </select>
+                  <p style={{fontSize:11,color:'var(--text-muted)',marginTop:6}}>Setting this too low may trigger bans on classified sites.</p>
+                </div>
+
+                <div style={{marginBottom:24}}>
+                  <label style={{display:'block',fontSize:12,fontWeight:600,color:'var(--text-secondary)',marginBottom:6}}>Max Ads Per User (Free Tier)</label>
+                  <input type="number" className="input-field" defaultValue={3} />
+                </div>
+
+                <div style={{padding:16,background:'rgba(239,68,68,0.05)',border:'1px solid rgba(239,68,68,0.2)',borderRadius:12,display:'flex',gap:12}}>
+                  <AlertTriangle size={20} color="#ef4444" style={{flexShrink:0}}/>
+                  <div>
+                    <p style={{fontSize:13,fontWeight:600,color:'#ef4444'}}>Emergency Kill Switch</p>
+                    <p style={{fontSize:11,color:'var(--text-secondary)',marginBottom:10}}>Instantly stop all background workers and pause all user campaigns. Use only if IPs are being blocked.</p>
+                    <button className="btn-danger">PAUSE ALL WORKERS</button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
