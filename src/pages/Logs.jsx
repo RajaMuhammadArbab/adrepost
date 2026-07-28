@@ -42,7 +42,7 @@ export default function Logs() {
         <Header title="Repost Logs" subtitle="Complete history of all repost attempts" />
         <div className="page-content fade-in">
           {/* Summary */}
-          <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:16,marginBottom:24}}>
+          <div className="stats-grid" style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:16,marginBottom:24}}>
             {[
               {label:'Total Reposts',  value:LOGS.length, color:'var(--accent-blue)'},
               {label:'Successful',     value:successCount, color:'var(--accent-green)'},
@@ -87,7 +87,7 @@ export default function Logs() {
             <div style={{padding:'14px 24px',borderBottom:'1px solid var(--border)'}}>
               <span style={{fontSize:13,color:'var(--text-muted)'}}>{filtered.length} log entries</span>
             </div>
-            <div style={{overflowX:'auto'}}>
+            <div className="table-wrapper">
               <table className="data-table">
                 <thead>
                   <tr>

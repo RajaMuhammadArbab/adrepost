@@ -66,7 +66,7 @@ export default function Accounts() {
           </div>
 
           {/* Account cards */}
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(320px,1fr))', gap:20 }}>
+          <div className="accounts-grid" style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(300px,1fr))', gap:20 }}>
             {accounts.map(acc => (
               <div key={acc.id} style={{ background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:16, padding:24, transition:'all 0.2s', position:'relative', overflow:'hidden' }}
                 onMouseEnter={e=>{e.currentTarget.style.borderColor='var(--accent-blue)';e.currentTarget.style.transform='translateY(-2px)'}}

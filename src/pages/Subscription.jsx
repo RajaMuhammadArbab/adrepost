@@ -67,7 +67,7 @@ export default function Subscription() {
         <div className="page-content fade-in">
 
           {/* Current plan banner */}
-          <div style={{background:'linear-gradient(135deg,rgba(59,130,246,0.05),rgba(139,92,246,0.05))',border:'1px solid rgba(139,92,246,0.2)',borderRadius:16,padding:'20px 28px',marginBottom:28,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+          <div style={{background:'linear-gradient(135deg,rgba(79,70,229,0.05),rgba(139,92,246,0.05))',border:'1px solid rgba(139,92,246,0.2)',borderRadius:16,padding:'20px 24px',marginBottom:28,display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:12}}>
             <div style={{display:'flex',alignItems:'center',gap:16}}>
               <div style={{width:48,height:48,borderRadius:12,background:'linear-gradient(135deg,#3b82f6,#8b5cf6)',display:'flex',alignItems:'center',justifyContent:'center'}}>
                 <Crown size={22} color="white"/>
@@ -102,7 +102,7 @@ export default function Subscription() {
               <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:20,fontSize:13,color:'var(--text-muted)'}}>
                 <Lock size={14} color="#10b981"/> Secure payments processed via Stripe
               </div>
-              <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:20}}>
+              <div className="plans-grid" style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:20}}>
                 {PLANS.map(plan=>(
                   <div key={plan.id} className={`plan-card ${plan.featured?'featured':''}`}>
                     <div style={{width:48,height:48,borderRadius:12,background:plan.iconBg,display:'flex',alignItems:'center',justifyContent:'center',marginBottom:16}}>

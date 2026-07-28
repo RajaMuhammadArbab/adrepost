@@ -67,7 +67,7 @@ export default function Dashboard() {
         <div className="page-content fade-in">
 
           {/* Stats */}
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:20, marginBottom:28 }}>
+          <div className="stats-grid" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:20, marginBottom:28 }}>
             {dynamicStats.map(({ label, value, change, icon:Icon, color, iconBg, iconColor }) => (
               <div key={label} className={`stat-card ${color}`}>
                 <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:16 }}>
@@ -83,7 +83,7 @@ export default function Dashboard() {
             ))}
           </div>
 
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 340px', gap:24 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr min(340px, 100%)', gap:24 }} className="dashboard-bottom">
             {/* Ads Quick View */}
             <div style={{ background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:16, overflow:'hidden' }}>
               <div style={{ padding:'20px 24px', borderBottom:'1px solid var(--border)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
@@ -93,7 +93,7 @@ export default function Dashboard() {
                 </div>
                 <a href="/ads" style={{ fontSize:12, color:'var(--accent-blue)', fontWeight:600, textDecoration:'none' }}>View All →</a>
               </div>
-              <table className="data-table">
+              <div className="table-wrapper"><table className="data-table">
                 <thead>
                   <tr>
                     <th>Ad Title</th>
@@ -125,7 +125,7 @@ export default function Dashboard() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </table></div>
             </div>
 
             {/* Activity Feed */}
