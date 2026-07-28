@@ -18,7 +18,7 @@ export default function Login() {
     setError('')
     setLoading(true)
     await new Promise(r => setTimeout(r, 600))
-    const result = login(form.email, form.password)
+    const result = await login(form.email, form.password)
     setLoading(false)
     if (!result.success) { setError(result.message); return }
     navigate(result.user.role === 'ADMIN' ? '/admin' : '/dashboard')

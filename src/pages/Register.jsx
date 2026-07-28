@@ -50,7 +50,7 @@ export default function Register() {
     if (form.password.length < 6) { setError('Password must be at least 6 characters'); return }
     setLoading(true)
     await new Promise(r => setTimeout(r, 700))
-    const result = register(form)
+    const result = await register(form)
     setLoading(false)
     if (!result.success) { setError(result.message); return }
     setSuccess(true)
