@@ -26,6 +26,8 @@ export default function Ads() {
   const [reposting, setReposting] = useState(null)
   const [syncingAll, setSyncingAll] = useState(false)
   const [toast, setToast]     = useState(null)
+  const [showModal, setShowModal] = useState(false)
+  const [newAd, setNewAd]     = useState({ title:'', category:'Cars', price:'', account:'olx_ali', interval:3 })
 
   const saveAds = (newAds) => {
     setAds(newAds)
@@ -47,9 +49,28 @@ export default function Ads() {
 
   const handleSyncAll = async () => {
     setSyncingAll(true)
-    await new Promise(r=>setTimeout(r,2500)) // Simulate network request to fetch ads
+    await new Promise(r=>setTimeout(r,2500))
     setSyncingAll(false)
     showToast('All active ads imported from platforms!')
+  }
+
+  const handleCreateAd = (e) => {
+    e.preventDefault()
+    const created = {
+      id: Date.now(),
+      title: newAd.title,
+      category: newAd.category,
+      price: newAd.price.startsWith('PKR') ? newAd.price : `PKR ${newAd.price}`,
+      account: newAd.account,
+      status: 'active',
+      autoRepost: true,
+      interval: Number(newAd.interval),
+      lastRepost: 'Just now'
+    }
+    saveAds([created, ...ads])
+    setShowModal(false)
+    setNewAd({ title:'', category:'Cars', price:'', account:'olx_ali', interval:3 })
+    showToast(`New ad "${created.title}" created & auto-repost scheduled!`)
   }
 
   const filtered = ads.filter(a => {
@@ -82,6 +103,10 @@ export default function Ads() {
               </button>
             ))}
             
+            <button className="btn-secondary" onClick={()=>setShowModal(true)} style={{padding:'9px 16px', fontSize:13}}>
+               + Create New Ad
+            </button>
+
             <button className="btn-primary" onClick={handleSyncAll} disabled={syncingAll} style={{padding:'9px 16px', fontSize:13}}>
                <DownloadCloud size={16} style={{animation:syncingAll?'bounce 1s infinite':'none'}}/> 
                {syncingAll ? 'Importing Ads...' : 'Import Latest Ads'}
@@ -145,7 +170,68 @@ export default function Ads() {
             </div>
           </div>
         </div>
-      </main>
+      {/* Create Ad Modal */}
+      {showModal && (
+        <div className="modal-overlay" onClick={()=>setShowModal(false)}>
+          <div className="modal-box" onClick={e=>e.stopPropagation()}>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
+              <h2 style={{ fontSize:18, fontWeight:700, color:'var(--text-primary)' }}>Post / Import New Ad</h2>
+              <button onClick={()=>setShowModal(false)} style={{ background:'none', border:'none', color:'var(--text-muted)', cursor:'pointer' }}>✕</button>
+            </div>
+            <form onSubmit={handleCreateAd}>
+              <div style={{ marginBottom:14 }}>
+                <label style={{ fontSize:13, fontWeight:600, color:'var(--text-secondary)', display:'block', marginBottom:6 }}>Ad Title</label>
+                <input className="input-field" type="text" placeholder="e.g. Honda Civic 2022 Full Option"
+                  value={newAd.title} onChange={e=>setNewAd({...newAd, title:e.target.value})} required />
+              </div>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:14 }}>
+                <div>
+                  <label style={{ fontSize:13, fontWeight:600, color:'var(--text-secondary)', display:'block', marginBottom:6 }}>Category</label>
+                  <select className="select-field" style={{ width:'100%', padding:'10px' }}
+                    value={newAd.category} onChange={e=>setNewAd({...newAd, category:e.target.value})}>
+                    <option>Cars</option>
+                    <option>Property</option>
+                    <option>Mobiles</option>
+                    <option>Electronics</option>
+                    <option>Services</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ fontSize:13, fontWeight:600, color:'var(--text-secondary)', display:'block', marginBottom:6 }}>Price (PKR)</label>
+                  <input className="input-field" type="text" placeholder="e.g. 45,00,000"
+                    value={newAd.price} onChange={e=>setNewAd({...newAd, price:e.target.value})} required />
+                </div>
+              </div>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:20 }}>
+                <div>
+                  <label style={{ fontSize:13, fontWeight:600, color:'var(--text-secondary)', display:'block', marginBottom:6 }}>Target Account</label>
+                  <select className="select-field" style={{ width:'100%', padding:'10px' }}
+                    value={newAd.account} onChange={e=>setNewAd({...newAd, account:e.target.value})}>
+                    <option value="olx_ali">olx_ali (OLX Pakistan)</option>
+                    <option value="zameen_pk">zameen_pk (Zameen.com)</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ fontSize:13, fontWeight:600, color:'var(--text-secondary)', display:'block', marginBottom:6 }}>Auto-Repost Interval</label>
+                  <select className="select-field" style={{ width:'100%', padding:'10px' }}
+                    value={newAd.interval} onChange={e=>setNewAd({...newAd, interval:e.target.value})}>
+                    <option value={1}>Every 1 hour</option>
+                    <option value={3}>Every 3 hours</option>
+                    <option value={6}>Every 6 hours</option>
+                    <option value={12}>Every 12 hours</option>
+                    <option value={24}>Every 24 hours</option>
+                  </select>
+                </div>
+              </div>
+              <div style={{ display:'flex', gap:10 }}>
+                <button type="button" className="btn-secondary" style={{ flex:1, justifyContent:'center' }} onClick={()=>setShowModal(false)}>Cancel</button>
+                <button type="submit" className="btn-primary" style={{ flex:1, justifyContent:'center' }}>Add Ad & Schedule</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {toast&&<div className={`toast ${toast.type==='success'?'toast-success':'toast-error'}`}>{toast.type==='success'?'✅':'❌'} {toast.msg}</div>}
       <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}} @keyframes bounce{0%, 100% {transform: translateY(0);} 50% {transform: translateY(-3px);}}`}</style>
     </div>
